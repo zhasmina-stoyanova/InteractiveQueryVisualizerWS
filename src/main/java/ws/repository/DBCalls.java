@@ -11,6 +11,7 @@ import java.util.List;
 
 public class DBCalls {
 
+    //get all lookup views
     public static List<LookupView> getLookupViewsList() {
         Connection conn = null;
         PreparedStatement pstmt = null;

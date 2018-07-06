@@ -2,7 +2,6 @@ package ws.resources;
 
 import ws.model.LookupView;
 import ws.repository.DBCalls;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -13,7 +12,7 @@ import java.util.List;
 public class LookupViewResource {
 
     @GET
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces(MediaType.APPLICATION_JSON)
     public List<LookupView> getAllLookupViewsList() {
         List<LookupView> lookupViewsList = DBCalls.getLookupViewsList();
         return lookupViewsList;

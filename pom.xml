@@ -49,12 +49,12 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.6</version>
         </dependency>
-        <!-- uncomment this to get JSON support
+        <!--needed to return json-->
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-moxy</artifactId>
         </dependency>
-        -->
+
 
     </dependencies>
     <properties>
