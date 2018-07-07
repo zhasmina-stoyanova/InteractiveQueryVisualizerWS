@@ -8,7 +8,7 @@ public class Repository {
 
     //MariaDB connection
     //local db
-    private static final String URL = "jdbc:mysql://localhost:3306/zs30_query_visualizer";
+    private static final String URL = "jdbc:mysql://localhost:3306/employees";
     private static final String USERNAME = "local_user";
     private static final String PASSWORD = "system";
 

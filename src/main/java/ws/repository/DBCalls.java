@@ -1,13 +1,9 @@
 package ws.repository;
 
-import ws.model.LookupView;
+import ws.model.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.*;
+import java.util.*;
 
 public class DBCalls {
 
@@ -20,15 +16,13 @@ public class DBCalls {
 
         try {
             conn = Repository.initializeConnection();
-            String query = "SELECT name from lookup_views";
+            String query = "SELECT name, description from lookup_views";
             pstmt = conn.prepareStatement(query);
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                LookupView notification = new LookupView();
-                notification.setName(rs.getString("name"));
-
-                list.add(notification);
+                LookupView view = new LookupView(rs.getString("name"), rs.getString("description"));
+                list.add(view);
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -39,6 +33,74 @@ public class DBCalls {
         }
 
         return list;
+    }
+
+    //get all attributes and their types for given lookup view
+    public static List<Attribute> getAttributesList(String lookupview) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        List<Attribute> list = new ArrayList<Attribute>();
+
+        try {
+            conn = Repository.initializeConnection();
+            String query = "SELECT column_name, data_type\n" +
+                    "FROM INFORMATION_SCHEMA.COLUMNS\n" +
+                    "where table_name = '" + lookupview + "'";
+            pstmt = conn.prepareStatement(query);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Attribute attribute = new Attribute(rs.getString("column_name"), rs.getString("data_type"));
+                list.add(attribute);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            closeResultSet(rs);
+            closePreparedStatement(pstmt);
+            closeConnection(conn);
+        }
+
+        return list;
+    }
+
+    //get table data for the lookup view
+    //for the test fetches only 10 records
+    public static List<TableDataRowItem> getTableData(String lookupview) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        List<TableDataRowItem> rowList = new ArrayList<>();
+
+        try {
+            conn = Repository.initializeConnection();
+            String query = "SELECT * FROM " + lookupview + " limit 10";
+            pstmt = conn.prepareStatement(query);
+            rs = pstmt.executeQuery();
+
+
+            ResultSetMetaData metaData = rs.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            while (rs.next()) {
+                List<TableDataCellItem> listColumn = new ArrayList<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    TableDataCellItem column = new TableDataCellItem(metaData.getColumnLabel(i), rs.getObject(i).toString());
+                    listColumn.add(column);
+                }
+
+                TableDataRowItem rowItem = new TableDataRowItem(listColumn);
+                rowList.add(rowItem);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            closeResultSet(rs);
+            closePreparedStatement(pstmt);
+            closeConnection(conn);
+        }
+        return rowList;
     }
 
     /**
