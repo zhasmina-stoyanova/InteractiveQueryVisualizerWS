@@ -103,6 +103,44 @@ public class DBCalls {
         return rowList;
     }
 
+    //get table data in the lookup view ordered by given attribute
+    //for the test fetches only 10 records
+    public static List<TableDataRowItem> getTableDataOrdered(String lookupview, String orderByAttribute, String order) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        List<TableDataRowItem> rowList = new ArrayList<>();
+
+        try {
+            conn = Repository.initializeConnection();
+            String query = "SELECT * FROM " + lookupview + " order by " + orderByAttribute + " " + order + " limit 10";
+            pstmt = conn.prepareStatement(query);
+            rs = pstmt.executeQuery();
+
+
+            ResultSetMetaData metaData = rs.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            while (rs.next()) {
+                List<TableDataCellItem> listColumn = new ArrayList<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    TableDataCellItem column = new TableDataCellItem(metaData.getColumnLabel(i), rs.getObject(i).toString());
+                    listColumn.add(column);
+                }
+
+                TableDataRowItem rowItem = new TableDataRowItem(listColumn);
+                rowList.add(rowItem);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            closeResultSet(rs);
+            closePreparedStatement(pstmt);
+            closeConnection(conn);
+        }
+        return rowList;
+    }
+
     /**
      * Closes the ResultSet.
      */
