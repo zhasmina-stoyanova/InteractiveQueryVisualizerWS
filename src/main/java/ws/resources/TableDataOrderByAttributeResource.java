@@ -12,9 +12,9 @@ public class TableDataOrderByAttributeResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{lookupview}/query")
+    @Path("/{lookupview}/orderBy")
     public List<TableDataRowItem> getTableDataOrderedValues(@PathParam("lookupview") String lookupview,
-                                                           @QueryParam("orderBy") String orderBy) {
+                                                           @QueryParam("attribute") String orderBy) {
         String orderByClause = orderBy;
         String[] parts = orderByClause.split(":");
         String orderByAttribute = parts[0];
