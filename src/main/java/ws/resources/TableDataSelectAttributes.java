@@ -15,9 +15,21 @@ public class TableDataSelectAttributes {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{lookupview}/select")
     public List<TableDataRowItem> getTableDataAttributeValues(@PathParam("lookupview") String lookupview,
-                                                            @QueryParam("attributes") String attributes) {
-        String arrt = attributes;
-        List<TableDataRowItem> data = DBCalls.getTableDataAttributes(lookupview, attributes);
+                                                              @QueryParam("attributes") String attributes, @QueryParam("orderBy") String orderBy) {
+        List<TableDataRowItem> data = null;
+        //have order by clause
+        if (orderBy != null) {
+            String orderByClause = orderBy;
+            String[] parts = orderByClause.split(":");
+            String orderByAttribute = parts[0];
+            //asc or desc order
+            String order = parts[1];
+            data = DBCalls.getTableDataAttributesOrdered(lookupview, attributes, orderByAttribute, order);
+            return data;
+        } else {
+            //just selecting attributes without order by clause
+            data = DBCalls.getTableDataAttributes(lookupview, attributes);
+        }
         return data;
     }
 }

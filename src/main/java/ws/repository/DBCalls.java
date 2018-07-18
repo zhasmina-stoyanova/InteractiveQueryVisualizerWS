@@ -105,7 +105,7 @@ public class DBCalls {
 
     //get table data in the lookup view ordered by given attribute
     //for the test fetches only 10 records
-    public static List<TableDataRowItem> getTableDataOrdered(String lookupview, String orderByAttribute, String order) {
+    public static List<TableDataRowItem> getTableDataAttributesOrdered(String lookupview, String attributes, String orderByAttribute, String order) {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -113,7 +113,7 @@ public class DBCalls {
 
         try {
             conn = Repository.initializeConnection();
-            String query = "SELECT * FROM " + lookupview + " order by " + orderByAttribute + " " + order + " limit 10";
+            String query = "SELECT " +  attributes + " FROM " + lookupview + " order by " + orderByAttribute + " " + order + " limit 10";
             pstmt = conn.prepareStatement(query);
             rs = pstmt.executeQuery();
 
