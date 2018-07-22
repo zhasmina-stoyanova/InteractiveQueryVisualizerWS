@@ -103,9 +103,9 @@ public class DBCalls {
         return rowList;
     }
 
-    //get table data in the lookup view ordered by given attribute
+    //selecting attributes with order by clause
     //for the test fetches only 10 records
-    public static List<TableDataRowItem> getTableDataAttributesOrdered(String lookupview, String attributes, String orderByAttribute, String order) {
+    public static List<TableDataRowItem> getTableDataAttributesOrdered(String lookupview, String attributes, String orderByAttribute, String where, String order) {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -113,7 +113,45 @@ public class DBCalls {
 
         try {
             conn = Repository.initializeConnection();
-            String query = "SELECT " +  attributes + " FROM " + lookupview + " order by " + orderByAttribute + " " + order + " limit 10";
+            String query = "SELECT " +  attributes + " FROM " + lookupview + " where " + where + " order by " + orderByAttribute + " " + order + " limit 10";
+            pstmt = conn.prepareStatement(query);
+            rs = pstmt.executeQuery();
+
+
+            ResultSetMetaData metaData = rs.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            while (rs.next()) {
+                List<TableDataCellItem> listColumn = new ArrayList<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    TableDataCellItem column = new TableDataCellItem(metaData.getColumnLabel(i), rs.getObject(i).toString());
+                    listColumn.add(column);
+                }
+
+                TableDataRowItem rowItem = new TableDataRowItem(listColumn);
+                rowList.add(rowItem);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            closeResultSet(rs);
+            closePreparedStatement(pstmt);
+            closeConnection(conn);
+        }
+        return rowList;
+    }
+
+    //selecting attributes without order by clause
+    //for the test fetches only 10 records
+    public static List<TableDataRowItem> getTableDataAttributes(String lookupview, String attributes, String where) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        List<TableDataRowItem> rowList = new ArrayList<>();
+
+        try {
+            conn = Repository.initializeConnection();
+            String query = "SELECT " +  attributes + " FROM " + lookupview + " where " + where + " limit 10";
             pstmt = conn.prepareStatement(query);
             rs = pstmt.executeQuery();
 
@@ -143,31 +181,20 @@ public class DBCalls {
 
     //get table data in the lookup view ordered by given attribute
     //for the test fetches only 10 records
-    public static List<TableDataRowItem> getTableDataAttributes(String lookupview, String attributes) {
+    public static ExtremeAttributeValues getAttributeExtremes(String lookupview, String attribute) {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        List<TableDataRowItem> rowList = new ArrayList<>();
+        ExtremeAttributeValues extremes = null;
 
         try {
             conn = Repository.initializeConnection();
-            String query = "SELECT " +  attributes + " FROM " + lookupview + " limit 10";
+            String query = "SELECT min(" +  attribute + ") as minimum , max(" + attribute + ") as maximum FROM " + lookupview + " limit 10";
             pstmt = conn.prepareStatement(query);
             rs = pstmt.executeQuery();
 
-
-            ResultSetMetaData metaData = rs.getMetaData();
-            int columnCount = metaData.getColumnCount();
-
             while (rs.next()) {
-                List<TableDataCellItem> listColumn = new ArrayList<>();
-                for (int i = 1; i <= columnCount; i++) {
-                    TableDataCellItem column = new TableDataCellItem(metaData.getColumnLabel(i), rs.getObject(i).toString());
-                    listColumn.add(column);
-                }
-
-                TableDataRowItem rowItem = new TableDataRowItem(listColumn);
-                rowList.add(rowItem);
+                extremes= new ExtremeAttributeValues(rs.getString("minimum"), rs.getString("maximum"));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -176,7 +203,7 @@ public class DBCalls {
             closePreparedStatement(pstmt);
             closeConnection(conn);
         }
-        return rowList;
+        return extremes;
     }
 
     /**
