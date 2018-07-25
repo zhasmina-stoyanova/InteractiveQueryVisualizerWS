@@ -75,7 +75,7 @@ public class DBCalls {
 
         try {
             conn = Repository.initializeConnection();
-            String query = "SELECT * FROM " + lookupview + " limit 10";
+            String query = "SELECT * FROM " + lookupview + " limit 30";
             pstmt = conn.prepareStatement(query);
             rs = pstmt.executeQuery();
 
@@ -113,7 +113,7 @@ public class DBCalls {
 
         try {
             conn = Repository.initializeConnection();
-            String query = "SELECT " +  attributes + " FROM " + lookupview + " where " + where + " order by " + orderByAttribute + " " + order + " limit 10";
+            String query = "SELECT " +  attributes + " FROM " + lookupview + " where " + where + " order by " + orderByAttribute + " " + order + " limit 30";
             pstmt = conn.prepareStatement(query);
             rs = pstmt.executeQuery();
 
@@ -151,7 +151,7 @@ public class DBCalls {
 
         try {
             conn = Repository.initializeConnection();
-            String query = "SELECT " +  attributes + " FROM " + lookupview + " where " + where + " limit 10";
+            String query = "SELECT " +  attributes + " FROM " + lookupview + " where " + where + " limit 30";
             pstmt = conn.prepareStatement(query);
             rs = pstmt.executeQuery();
 
@@ -189,7 +189,7 @@ public class DBCalls {
 
         try {
             conn = Repository.initializeConnection();
-            String query = "SELECT min(" +  attribute + ") as minimum , max(" + attribute + ") as maximum FROM " + lookupview + " limit 10";
+            String query = "SELECT min(" +  attribute + ") as minimum , max(" + attribute + ") as maximum FROM " + lookupview + " limit 30";
             pstmt = conn.prepareStatement(query);
             rs = pstmt.executeQuery();
 

@@ -24,7 +24,18 @@ public class TableDataSelectAttributes {
             String str = where;
             List<String> whereList = Arrays.asList(str.split(","));
             for(int i = 0; i < whereList.size(); i++){
-                whereClause.append(" and " + whereList.get(i));
+                //example SID=1;3 - values for SID are between 1 and 3
+                if(whereList.get(i).contains(";")){
+                    String param = whereList.get(i);
+                    int indexEqualsSymbol = param.indexOf("=");
+                    int separatorSymbol = param.indexOf(";");
+                    String attributeName = param.substring(0, indexEqualsSymbol);
+                    String startValueInRange = param.substring(indexEqualsSymbol + 1, separatorSymbol);
+                    String endValueInRange = param.substring(separatorSymbol + 1, param.length());
+                    whereClause.append(" and " + attributeName + " >= " + startValueInRange + " and " + attributeName + " <= " + endValueInRange + " ");
+                }else {
+                    whereClause.append(" and " + whereList.get(i));
+                }
             }
             whereClause = whereClause.delete(0, 5);
         }
