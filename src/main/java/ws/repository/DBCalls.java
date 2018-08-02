@@ -6,6 +6,7 @@ import java.sql.*;
 import java.util.*;
 
 public class DBCalls {
+    private static String userId;
 
     //get all lookup views
     public static List<LookupView> getLookupViewsList() {
@@ -33,6 +34,34 @@ public class DBCalls {
         }
 
         return list;
+    }
+
+    public static boolean authenticateUser(String username, String password) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = Repository.initializeConnection();
+            String query = "select id from user where username=? and password=?";
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                userId = rs.getString("id");
+                return true;
+            } else {
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResultSet(rs);
+            closePreparedStatement(pstmt);
+            closeConnection(conn);
+        }
+        return false;
     }
 
     //get all attributes and their types for given lookup view
@@ -113,7 +142,7 @@ public class DBCalls {
 
         try {
             conn = Repository.initializeConnection();
-            String query = "SELECT " +  attributes + " FROM " + lookupview + " where " + where + " order by " + orderByAttribute + " " + order + " limit 30";
+            String query = "SELECT " + attributes + " FROM " + lookupview + " where " + where + " order by " + orderByAttribute + " " + order + " limit 30";
             pstmt = conn.prepareStatement(query);
             rs = pstmt.executeQuery();
 
@@ -151,7 +180,7 @@ public class DBCalls {
 
         try {
             conn = Repository.initializeConnection();
-            String query = "SELECT " +  attributes + " FROM " + lookupview + " where " + where + " limit 30";
+            String query = "SELECT " + attributes + " FROM " + lookupview + " where " + where + " limit 30";
             pstmt = conn.prepareStatement(query);
             rs = pstmt.executeQuery();
 
@@ -189,12 +218,12 @@ public class DBCalls {
 
         try {
             conn = Repository.initializeConnection();
-            String query = "SELECT min(" +  attribute + ") as minimum , max(" + attribute + ") as maximum FROM " + lookupview + " limit 30";
+            String query = "SELECT min(" + attribute + ") as minimum , max(" + attribute + ") as maximum FROM " + lookupview + " limit 30";
             pstmt = conn.prepareStatement(query);
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                extremes= new ExtremeAttributeValues(rs.getString("minimum"), rs.getString("maximum"));
+                extremes = new ExtremeAttributeValues(rs.getString("minimum"), rs.getString("maximum"));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());

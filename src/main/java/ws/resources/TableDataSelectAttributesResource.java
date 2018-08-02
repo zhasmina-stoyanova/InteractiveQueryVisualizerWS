@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Path("lookupviews")
-public class TableDataSelectAttributes {
+public class TableDataSelectAttributesResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
