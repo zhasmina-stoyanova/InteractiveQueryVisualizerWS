@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class Repository {
 
     //MariaDB connection
-    private static final String URL = "jdbc:mysql://zs30.host.cs.st-andrews.ac.uk:3306/zs30_sakila";
+    private static final String URL = "jdbc:mysql://zs30.host.cs.st-andrews.ac.uk:3306/zs30_dba";
     private static final String USERNAME = "zs30";
     private static final String PASSWORD = "F14VMP7v.d47wg";
 

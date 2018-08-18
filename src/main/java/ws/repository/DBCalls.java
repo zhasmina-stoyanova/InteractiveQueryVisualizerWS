@@ -17,7 +17,13 @@ public class DBCalls {
 
         try {
             conn = Repository.initializeConnection();
-            String query = "SELECT name, description from lookup_views";
+            String query = "select lv.name, lv.description\n" +
+                    "from user u\n" +
+                    "inner join user_in_role ur on u.id = ur.user_id\n" +
+                    "inner join role r on ur.role_id = r.id\n" +
+                    "inner join lookup_view_in_role lvr on r.id = lvr.role_id\n" +
+                    "inner join lookup_view lv on lvr.lookup_view_id = lv.id\n" +
+                    "and u.id = '" + userId + "'";
             pstmt = conn.prepareStatement(query);
             rs = pstmt.executeQuery();
 
@@ -64,6 +70,31 @@ public class DBCalls {
         return false;
     }
 
+    public static String getLookupViewSchema(String lookupview) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        String view = null;
+        try {
+            conn = Repository.initializeConnection();
+            String query = "select schema_name from lookup_view where name=?";
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, lookupview);
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                view = rs.getString("schema_name");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResultSet(rs);
+            closePreparedStatement(pstmt);
+            closeConnection(conn);
+        }
+        return view;
+    }
+
     //get all attributes and their types for given lookup view
     public static List<Attribute> getAttributesList(String lookupview) {
         Connection conn = null;
@@ -101,10 +132,11 @@ public class DBCalls {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         List<TableDataRowItem> rowList = new ArrayList<>();
+        String schema = getLookupViewSchema(lookupview);
 
         try {
             conn = Repository.initializeConnection();
-            String query = "SELECT * FROM " + lookupview + " limit 30";
+            String query = "SELECT * FROM " + schema + ".`" + lookupview + "` limit 30";
             pstmt = conn.prepareStatement(query);
             rs = pstmt.executeQuery();
 
@@ -115,7 +147,7 @@ public class DBCalls {
             while (rs.next()) {
                 List<TableDataCellItem> listColumn = new ArrayList<>();
                 for (int i = 1; i <= columnCount; i++) {
-                    TableDataCellItem column = new TableDataCellItem(metaData.getColumnLabel(i), rs.getObject(i).toString());
+                    TableDataCellItem column = new TableDataCellItem(metaData.getColumnLabel(i), (rs.getObject(i) != null ? "" + rs.getObject(i) : ""));
                     listColumn.add(column);
                 }
 
@@ -139,10 +171,11 @@ public class DBCalls {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         List<TableDataRowItem> rowList = new ArrayList<>();
+        String schema = getLookupViewSchema(lookupview);
 
         try {
             conn = Repository.initializeConnection();
-            String query = "SELECT " + attributes + " FROM " + lookupview + " where " + where + " order by " + orderByAttribute + " " + order + " limit 30";
+            String query = "SELECT " + attributes + " FROM " + schema + ".`" + lookupview + "` where " + where + " order by " + orderByAttribute + " " + order + " limit 30";
             pstmt = conn.prepareStatement(query);
             rs = pstmt.executeQuery();
 
@@ -177,10 +210,11 @@ public class DBCalls {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         List<TableDataRowItem> rowList = new ArrayList<>();
+        String schema = getLookupViewSchema(lookupview);
 
         try {
             conn = Repository.initializeConnection();
-            String query = "SELECT " + attributes + " FROM " + lookupview + " where " + where + " limit 30";
+            String query = "SELECT " + attributes + " FROM " + schema + ".`" + lookupview + "` where " + where + " limit 30";
             pstmt = conn.prepareStatement(query);
             rs = pstmt.executeQuery();
 
@@ -215,10 +249,11 @@ public class DBCalls {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         ExtremeAttributeValues extremes = null;
+        String schema = getLookupViewSchema(lookupview);
 
         try {
             conn = Repository.initializeConnection();
-            String query = "SELECT min(" + attribute + ") as minimum , max(" + attribute + ") as maximum FROM " + lookupview + " limit 30";
+            String query = "SELECT min(" + attribute + ") as minimum , max(" + attribute + ") as maximum FROM " + schema + ".`" + lookupview + "` limit 30";
             pstmt = conn.prepareStatement(query);
             rs = pstmt.executeQuery();
 
