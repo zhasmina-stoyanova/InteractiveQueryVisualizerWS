@@ -7,7 +7,7 @@ Apache Tomcat 8.5
 1. The file InteractiveQueryVisualizerWS.war must be deployed on a server running at port 8080
    For Apache Tomcat the file can be dropped at \webapps directory of its installation.
 
-## Web service requests in JSON format:
+## Web service requests:
 The web service allows users to:
 Get a list of all lookup views available for the role of the logged in user
 URL	http://localhost:8080/InteractiveQueryVisualizerWS/webapi/lookupviews
