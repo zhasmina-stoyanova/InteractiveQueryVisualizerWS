@@ -1,23 +1,23 @@
 package ws.resources;
 
-import ws.model.LookupView;
-import ws.repository.DBCalls;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.List;
 
+/**
+ * Contains a method which returns ok
+ * if the user is authenticated correctly on login page
+ *
+ * @author Zhasmina Stoyanova
+ * @version 1.0 August 2018
+ */
 @Path("authentication")
 public class AuthenticatedUserResource {
+    //returns ok if the user has entered correct credentials on login page
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getAllLookupViewsList() {
         return "ok";
-        //return Response.ok();
-        //return Response.status(404).type("text/plain").entity("No such user found").build();
-
     }
 }

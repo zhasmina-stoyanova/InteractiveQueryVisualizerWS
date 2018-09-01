@@ -1,19 +1,26 @@
 package ws.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.*;
-
-@XmlRootElement
+/**
+ * A class that represents a lookup view in the database.
+ * Contains information about its name.
+ *
+ * @author Zhasmina Stoyanova
+ * @version 1.0 August 2018
+ */
 public class LookupView {
     private String name;
-    private String description;
 
+    //empty constructor
     public LookupView() {
     }
 
-    public LookupView(String name, String description) {
+    /**
+     * Initializes a new instance of the class by passing the lookup view name.
+     *
+     * @param name the name of the lookup view
+     */
+    public LookupView(String name) {
         this.setName(name);
-        this.setDescription(description);
     }
 
     public String getName() {
@@ -22,13 +29,5 @@ public class LookupView {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 }
